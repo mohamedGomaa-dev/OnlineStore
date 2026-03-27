@@ -10,6 +10,6 @@ namespace Store.DataAccess.Repositories.interfaces
 {
     public interface IUserRepository : IGenericRepository<User>
     {
-        Task<(IEnumerable<User>, int TotalCount)> GetUsersAsync(UserQuery query);
+        Task<(IEnumerable<User> items, int TotalCount)> GetUsersAsync(UserQuery query);
     }
 }

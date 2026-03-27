@@ -17,6 +17,15 @@ namespace Store.Services.Helpers
             };
         }
 
+        public static Result Success(string message)
+        {
+            return new Result()
+            {
+                IsSuccess = true,
+                Message = message
+            };
+        }
+
         public static Result<T> Success<T>(string message, T data)
         {
             return new Result<T>()

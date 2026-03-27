@@ -19,7 +19,7 @@ namespace Store.DataAccess.Repositories.implementations
         {
             _context = context;
         }
-        public async Task<(IEnumerable<User>, int TotalCount)> GetUsersAsync(UserQuery query)
+        public async Task<(IEnumerable<User> items, int TotalCount)> GetUsersAsync(UserQuery query)
         {
             var users = _context.Users.AsNoTracking().AsQueryable();
             if (!string.IsNullOrWhiteSpace(query.Name))
