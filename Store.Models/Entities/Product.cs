@@ -7,27 +7,22 @@ using System.Threading.Tasks;
 
 namespace Store.Models.Entities
 {
-    public class User: IBaseEntity
+    public class Product : IBaseEntity
     {
         public int Id { get; set; }
-
         [MaxLength(100)]
         public string Name { get; set; } = string.Empty;
 
-        [MaxLength(100)]
-        public string Email { get; set; } = string.Empty;
+        [MaxLength(500)]
+        public string Description { get; set; } = string.Empty;
 
-        [MaxLength(20)]
-        public string? Phone { get; set; }
+        public decimal Price { get; set; }
 
-        [MaxLength(200)]
-        public string Address { get; set; } = string.Empty;
+        public int QuantityStock { get; set; }
 
-        [MaxLength(100)]
-        public string Username { get; set; } = string.Empty;
-        
-        [MaxLength(100)]
-        public string PasswordHash { get; set; } = string.Empty;
+        public int CategoryId { get; set; }
+        public Category? Category { get; set; }
+        public ICollection<ProductImage>? ProductImages { get; set; }
 
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; }

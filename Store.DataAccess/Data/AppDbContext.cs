@@ -14,5 +14,42 @@ namespace Store.DataAccess.Data
 
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<Category> Categories { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>().HasQueryFilter(u => !u.IsDeleted);
+            modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
+            modelBuilder.Entity<ProductImage>().HasQueryFilter(pi => !pi.IsDeleted);
+            modelBuilder.Entity<Category>().HasQueryFilter(c => !c.IsDeleted);
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            // 1. نبحث عن كل الكيانات التي يتم تتبعها حالياً وتطبق واجهة IBaseEntity
+            var entries = ChangeTracker.Entries<IBaseEntity>();
+
+            foreach (var entry in entries)
+            {
+                // 2. إذا كان الكيان جديداً (تمت إضافته للتو)
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreatedAt = DateTime.UtcNow; // أو DateTime.Now حسب تفضيلك
+                }
+                // 3. إذا كان الكيان قديماً ولكن تم تعديله
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                }
+            }
+
+            // 4. أخيراً، اجعل EF Core يكمل عمله الطبيعي ويحفظ في الداتا بيز
+            return base.SaveChangesAsync(cancellationToken);
+        }
     }
 }

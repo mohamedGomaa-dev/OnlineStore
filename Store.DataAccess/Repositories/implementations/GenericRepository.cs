@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Store.DataAccess.Data;
 using Store.DataAccess.Repositories.interfaces;
+using Store.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Store.DataAccess.Repositories.implementations
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : class, IBaseEntity
     {
         private readonly AppDbContext _context;
         public GenericRepository(AppDbContext context)
@@ -24,7 +25,8 @@ namespace Store.DataAccess.Repositories.implementations
 
         public void Delete(T item)
         {
-            _context.Set<T>().Remove(item);
+            item.IsDeleted = true;
+            _context.Set<T>().Update(item);
         }
 
         public async Task<bool> ExistsAsync(Expression<Func<T, bool>> match)

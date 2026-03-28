@@ -12,6 +12,7 @@ namespace Store.DataAccess.Units.interfaces
     {
 
         IUserRepository Users { get; }
+        ICategoryRepository Categories { get; }
         Task<int> CommitChanges();
     }
 }
