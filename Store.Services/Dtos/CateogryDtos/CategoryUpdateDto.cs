@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Store.Services.Dtos.CateogryDtos
 {
-    internal class CategoryUpdateDto
+    public class CategoryUpdateDto
     {
         public int Id { get; set; }
 
