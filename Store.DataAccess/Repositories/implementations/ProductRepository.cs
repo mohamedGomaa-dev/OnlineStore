@@ -48,6 +48,29 @@ namespace Store.DataAccess.Repositories.implementations
             // get total count after filtering
             var totalCount = await products.CountAsync();
 
+            // check if there is ordering
+            if (!string.IsNullOrWhiteSpace(query.OrderBy))
+            {
+                if (query.OrderBy.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                {
+                    products = query.IsDescending ?
+                        products.OrderByDescending(u => u.Name) :
+                        products.OrderBy(u => u.Name);
+                }
+
+                if (query.OrderBy.Equals("Price", StringComparison.OrdinalIgnoreCase))
+                {
+                    products = query.IsDescending ?
+                        products.OrderByDescending(u => u.Price) :
+                        products.OrderBy(u => u.Price);
+                }
+                if (query.OrderBy.Equals("Category", StringComparison.OrdinalIgnoreCase))
+                {
+                    products = query.IsDescending ?
+                        products.OrderByDescending(u => u.Category.Name) :
+                        products.OrderBy(u => u.Category.Name);
+                }
+            }
             int skipNumber = (query.PageNumber - 1) * query.PageSize;
 
             products = products.Skip(skipNumber).Take(query.PageSize);
