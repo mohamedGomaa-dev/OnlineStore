@@ -1,0 +1,90 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Store.DataAccess.Helpers;
+using Store.Services.Dtos.ProductDtos;
+using Store.Services.Services.implementations;
+using Store.Services.Services.interfaces;
+
+namespace Store.API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ProductsController : ControllerBase
+    {
+
+        private readonly IProductService _productService;
+        public ProductsController(IProductService productService)
+        {
+            _productService = productService;
+        }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllProducts([FromQuery] ProductQuery query)
+        {
+            var result = await _productService.GetAllProductsAsync(query);
+
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetProduct([FromRoute] int id)
+        {
+            var result = await _productService.GetProductByIdAsync(id);
+            if (!result.IsSuccess)
+            {
+                if (result.Data is null)
+                {
+                    return NotFound(result.Message);
+                }
+                return BadRequest(result.Message);
+            }
+            return Ok(result.Data);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AddProduct([FromBody] ProductCreateDto dto)
+        {
+            var result = await _productService.AddProductAsync(dto);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return CreatedAtAction(nameof(GetProduct),new {id = result.Data?.Id},result.Data);
+        }
+
+        [HttpPut]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateProduct([FromBody] ProductUpdateDto dto)
+        {
+            var result = await _productService.UpdateProductAsync(dto);
+            if (!result.IsSuccess)
+            {
+                return NotFound(result.Message);
+            }
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteProduct([FromRoute] int id)
+        {
+
+            var result = await _productService.DeleteProductAsync(id);
+            if (!result.IsSuccess)
+            {
+                return NotFound(result.Message);
+            }
+            return NoContent();
+        }
+    }
+}

@@ -24,6 +24,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 // add services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 // add automapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile));

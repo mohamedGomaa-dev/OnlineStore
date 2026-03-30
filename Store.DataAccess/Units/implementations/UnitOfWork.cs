@@ -20,12 +20,15 @@ namespace Store.DataAccess.Units.implementations
             Users = new UserRepository(_context);
             Categories = new CategoryRepository(_context);
             Products = new ProductRepository(_context);
+            ProductImages = new ProductImageRepository(_context);
 
         }
         public IUserRepository Users { get; private set; }
         public ICategoryRepository Categories { get; private set; }
 
         public IProductRepository Products { get; private set; }
+
+        public IProductImageRepository ProductImages { get; private set; }
 
         public async Task<int> CommitChanges()
         {
