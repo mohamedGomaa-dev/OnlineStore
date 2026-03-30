@@ -20,7 +20,7 @@ namespace Store.DataAccess.Repositories.implementations
         }
         public async Task<IEnumerable<ProductImage>> GetImagesByProductIdAsync(int productId)
         {
-            return await _context.ProductImages.Include(i => i.Product).Where(i => i.ProductId == productId).ToListAsync();
+            return await _context.ProductImages.Include(i => i.Product).Where(i => i.ProductId == productId).OrderBy(i => i.ImageOrder).ToListAsync();
         }
     }
 }

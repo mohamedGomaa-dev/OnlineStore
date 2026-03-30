@@ -13,9 +13,12 @@ namespace Store.API.Controllers
     {
 
         private readonly IProductService _productService;
-        public ProductsController(IProductService productService)
+        private readonly IProductImageService _imageService;
+
+        public ProductsController(IProductService productService, IProductImageService imageService)
         {
             _productService = productService;
+            _imageService = imageService;
         }
 
         [HttpGet]
@@ -26,7 +29,7 @@ namespace Store.API.Controllers
 
             return Ok(result);
         }
-
+        
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -85,6 +88,24 @@ namespace Store.API.Controllers
                 return NotFound(result.Message);
             }
             return NoContent();
+        }
+
+        [HttpGet("{id}/images")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetProductImages([FromRoute] int id)
+        {
+            var result = await _imageService.GetProductImagesAsync(id);
+            if (!result.IsSuccess)
+            {
+                if (result.Data is null)
+                {
+                    return NotFound(result.Message);
+                }
+                return BadRequest(result.Message);
+            }
+            return Ok(result.Data);
         }
     }
 }
