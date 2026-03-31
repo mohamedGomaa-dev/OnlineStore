@@ -32,5 +32,8 @@ namespace Store.Models.Entities
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+
+        // navigation properties
+        public ICollection<Order>? Orders { get; set; }
     }
 }

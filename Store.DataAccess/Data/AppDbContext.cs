@@ -17,6 +17,8 @@ namespace Store.DataAccess.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -27,6 +29,8 @@ namespace Store.DataAccess.Data
             modelBuilder.Entity<Product>().HasQueryFilter(p => !p.IsDeleted);
             modelBuilder.Entity<ProductImage>().HasQueryFilter(pi => !pi.IsDeleted);
             modelBuilder.Entity<Category>().HasQueryFilter(c => !c.IsDeleted);
+            modelBuilder.Entity<Order>().HasQueryFilter(c => !c.IsDeleted);
+            modelBuilder.Entity<OrderItem>().HasQueryFilter(c => !c.IsDeleted);
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
