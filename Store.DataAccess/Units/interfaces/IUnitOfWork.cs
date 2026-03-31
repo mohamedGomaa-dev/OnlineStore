@@ -15,6 +15,7 @@ namespace Store.DataAccess.Units.interfaces
         ICategoryRepository Categories { get; }
         IProductRepository Products { get; }
         IProductImageRepository ProductImages { get; }
+        IOrderRepository Orders { get; }
         Task<int> CommitChanges();
     }
 }

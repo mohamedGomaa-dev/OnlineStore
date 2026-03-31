@@ -21,6 +21,7 @@ namespace Store.DataAccess.Units.implementations
             Categories = new CategoryRepository(_context);
             Products = new ProductRepository(_context);
             ProductImages = new ProductImageRepository(_context);
+            Orders = new OrderRepository(_context);
 
         }
         public IUserRepository Users { get; private set; }
@@ -29,6 +30,8 @@ namespace Store.DataAccess.Units.implementations
         public IProductRepository Products { get; private set; }
 
         public IProductImageRepository ProductImages { get; private set; }
+
+        public IOrderRepository Orders { get; private set; }
 
         public async Task<int> CommitChanges()
         {

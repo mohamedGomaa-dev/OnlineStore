@@ -2,6 +2,7 @@
 using Store.Models.Entities;
 using Store.Services.Dtos.CateogryDtos;
 using Store.Services.Dtos.ImageDtos;
+using Store.Services.Dtos.OrderDtos;
 using Store.Services.Dtos.ProductDtos;
 using Store.Services.Dtos.UserDtos;
 using System;
@@ -31,6 +32,15 @@ namespace Store.Services.Helpers
 
             // image dtos
             CreateMap<ProductImage, ProductImageDto>().ReverseMap();
+
+            
+            // order dtos
+            CreateMap<OrderItem, OrderItemDto>()
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product != null ? src.Product.Name : "Unknown Product"));
+
+            CreateMap<Order, OrderDto>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+                .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.OrderItems));
         }
     }
 }
