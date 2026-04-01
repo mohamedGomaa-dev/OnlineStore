@@ -21,7 +21,7 @@ namespace Store.DataAccess.Repositories.implementations
 
         public async Task<Order?> GetOrderByIdWithItemsAsync(int orderId)
         {
-           return await _context.Orders.Include(o => o.OrderItems).ThenInclude(i => i.Product).FirstOrDefaultAsync(o => o.Id == orderId);
+           return await _context.Orders.AsNoTracking().Include(o => o.OrderItems).ThenInclude(i => i.Product).FirstOrDefaultAsync(o => o.Id == orderId);
 
            
         }
