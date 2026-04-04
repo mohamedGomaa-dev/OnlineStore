@@ -3,6 +3,7 @@ using Store.Models.Entities;
 using Store.Services.Dtos.CateogryDtos;
 using Store.Services.Dtos.ImageDtos;
 using Store.Services.Dtos.OrderDtos;
+using Store.Services.Dtos.PaymentDtos;
 using Store.Services.Dtos.ProductDtos;
 using Store.Services.Dtos.UserDtos;
 using System;
@@ -41,6 +42,11 @@ namespace Store.Services.Helpers
             CreateMap<Order, OrderDto>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
                 .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.OrderItems));
+
+
+            // payment dtos
+            CreateMap<Payment, PaymentDto>();
+            CreateMap<PaymentCreateDto, Payment>();
         }
     }
 }
