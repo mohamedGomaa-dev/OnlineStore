@@ -19,6 +19,7 @@ namespace Store.DataAccess.Units.interfaces
         IOrderRepository Orders { get; }
         IPaymentRepository Payments { get; }
         IShippingRepository Shippings { get; }
+        IReviewRepository Reviews { get; }
         Task<int> CommitChanges();
     }
 }

@@ -35,5 +35,7 @@ namespace Store.Models.Entities
 
         // navigation properties
         public ICollection<Order>? Orders { get; set; }
+        public ICollection<Review>? Reviews { get; set; }
+
     }
 }

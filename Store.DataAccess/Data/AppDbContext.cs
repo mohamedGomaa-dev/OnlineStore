@@ -21,6 +21,7 @@ namespace Store.DataAccess.Data
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Shipping> Shippings { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -35,6 +36,7 @@ namespace Store.DataAccess.Data
             modelBuilder.Entity<OrderItem>().HasQueryFilter(c => !c.IsDeleted);
             modelBuilder.Entity<Payment>().HasQueryFilter(c => !c.IsDeleted);
             modelBuilder.Entity<Shipping>().HasQueryFilter(c => !c.IsDeleted);
+            modelBuilder.Entity<Review>().HasQueryFilter(c => !c.IsDeleted);
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

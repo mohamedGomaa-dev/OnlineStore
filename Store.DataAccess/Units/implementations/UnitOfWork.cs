@@ -24,6 +24,7 @@ namespace Store.DataAccess.Units.implementations
             Orders = new OrderRepository(_context);
             Payments = new PaymentRepository(_context);
             Shippings = new ShippingRepository(_context);
+            Reviews = new ReviewRepository(_context);
 
         }
         public IUserRepository Users { get; private set; }
@@ -36,6 +37,7 @@ namespace Store.DataAccess.Units.implementations
         public IOrderRepository Orders { get; private set; }
         public IPaymentRepository Payments { get; private set; }
         public IShippingRepository Shippings { get; private set; }
+        public IReviewRepository Reviews { get; private set; }
 
         public async Task<int> CommitChanges()
         {

@@ -28,6 +28,7 @@ namespace Store.Models.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public ICollection<OrderItem>? OrderItems { get; set; }
+        public ICollection<Review>? Reviews { get; set; }
 
     }
 }
