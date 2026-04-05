@@ -5,6 +5,7 @@ using Store.Services.Dtos.ImageDtos;
 using Store.Services.Dtos.OrderDtos;
 using Store.Services.Dtos.PaymentDtos;
 using Store.Services.Dtos.ProductDtos;
+using Store.Services.Dtos.ReviewDtos;
 using Store.Services.Dtos.ShippingDtos;
 using Store.Services.Dtos.UserDtos;
 using System;
@@ -52,6 +53,10 @@ namespace Store.Services.Helpers
             // shipping dtos
             CreateMap<Shipping, ShippingDto>();
             CreateMap<ShippingCreateDto, Shipping>();
+
+            // review dtos
+            CreateMap<Review, ReviewDto>();
+            CreateMap<ReviewCreateDto, Review>();
         }
     }
 }
