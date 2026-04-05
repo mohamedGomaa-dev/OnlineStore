@@ -21,6 +21,7 @@ namespace Store.Models.Entities
         public DateTime? UpdatedAt { get; set; }
 
         public ICollection<OrderItem>? OrderItems { get; set; }
-        public ICollection<Payment>? Payments { get; set; }
+        public Payment? Payment { get; set; }
+        public Shipping? Shipping { get; set; }
     }
 }

@@ -25,7 +25,7 @@ namespace Store.API.Controllers
             {
                 return BadRequest(result.Message);
             }
-            return CreatedAtAction(nameof(GetPaymentByOrderId), new { orderId = result.Data?.Id }, result.Data);
+            return CreatedAtAction(nameof(GetPaymentByOrderId), new { orderId = result.Data?.OrderId }, result.Data);
         }
 
         [HttpGet("{orderId}")]
