@@ -29,6 +29,7 @@ builder.Services.AddScoped<IProductImageService, ProductImageService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IShippingService, ShippingService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 // add automapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
