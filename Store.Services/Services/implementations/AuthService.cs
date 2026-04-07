@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Store.DataAccess.Units.interfaces;
 using Store.Models.Entities;
@@ -21,11 +22,14 @@ namespace Store.Services.Services.implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IConfiguration _config;
 
-        public AuthService(IUnitOfWork unitOfWork, IMapper mapper)
+
+        public AuthService(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _config = configuration;
         }
         public async Task<Result<string>> LoginAsync(LoginDto dto)
         {
@@ -75,10 +79,15 @@ namespace Store.Services.Services.implementations
         new Claim(ClaimTypes.Name, user.Username),
         new Claim(ClaimTypes.Role, user.Role.ToString()) // 👈 هنا نضع صلاحية المستخدم
     };
+            var secretKey = _config["JWT_SECRET_KEY"];
 
+            if (string.IsNullOrEmpty(secretKey))
+            {
+                throw new InvalidOperationException("JWT Secret Key is missing!");
+            }
             // 2. إنشاء مفتاح التشفير السري (مؤقتاً نضعه هنا، لاحقاً سننقله لـ appsettings.json)
             // يجب أن يكون المفتاح طويلاً ومعقداً (على الأقل 32 حرف)
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MySuperSecretKey_StoreAPI_2026_SecureKey"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
             // 3. اختيار خوارزمية التشفير
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
