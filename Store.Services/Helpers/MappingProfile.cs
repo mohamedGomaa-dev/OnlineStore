@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Store.Models.Entities;
+using Store.Services.Dtos.AuthDtos;
 using Store.Services.Dtos.CateogryDtos;
 using Store.Services.Dtos.ImageDtos;
 using Store.Services.Dtos.OrderDtos;
@@ -57,6 +58,9 @@ namespace Store.Services.Helpers
             // review dtos
             CreateMap<Review, ReviewDto>();
             CreateMap<ReviewCreateDto, Review>();
+
+            // auth dtos
+            CreateMap<RegisterDto, User>().ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
         }
     }
 }

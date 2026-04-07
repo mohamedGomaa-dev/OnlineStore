@@ -30,12 +30,28 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IShippingService, ShippingService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // add automapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// add cors configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("StoreApiCorsPolicy", policy =>
+    {
+        policy
+            .WithOrigins(
+                "https://localhost:7023",
+                "http://localhost:5146"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -47,7 +63,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("StoreApiCorsPolicy");
 app.UseAuthorization();
 
 app.MapControllers();

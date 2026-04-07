@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Store.Models.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -28,6 +29,8 @@ namespace Store.Models.Entities
         
         [MaxLength(100)]
         public string PasswordHash { get; set; } = string.Empty;
+
+        public UserRole Role { get; set; } = UserRole.Customer;
 
         public bool IsDeleted { get; set; } = false;
         public DateTime CreatedAt { get; set; }
