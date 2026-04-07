@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Store.API.Extensions;
+using Store.Models.Entities;
 using Store.Services.Dtos.PaymentDtos;
 using Store.Services.Services.interfaces;
 
 namespace Store.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class PaymentsController : ControllerBase
@@ -14,7 +18,7 @@ namespace Store.API.Controllers
         {
             _paymentService = paymentService;
         }
-
+        
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -27,18 +31,19 @@ namespace Store.API.Controllers
             }
             return CreatedAtAction(nameof(GetPaymentByOrderId), new { orderId = result.Data?.OrderId }, result.Data);
         }
-
+       
         [HttpGet("{orderId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetPaymentByOrderId([FromRoute] int orderId)
         {
+
             var result = await _paymentService.GetPaymentByOrderIdAsync(orderId);
             if (!result.IsSuccess)
             {
                 return NotFound(result.Message);
             }
-
+            
             return Ok(result.Data);
         }
 

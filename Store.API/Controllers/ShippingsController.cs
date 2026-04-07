@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Store.API.Extensions;
+using Store.Models.Entities;
 using Store.Models.Enums;
 using Store.Services.Dtos.ShippingDtos;
 using Store.Services.Services.interfaces;
 
 namespace Store.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ShippingsController : ControllerBase
@@ -15,7 +19,7 @@ namespace Store.API.Controllers
         {
             _shippingService = shippingService;
         }
-
+        [Authorize(Roles ="Admin")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -39,9 +43,11 @@ namespace Store.API.Controllers
             {
                 return NotFound(result.Message);
             }
+            
             return Ok(result.Data);
         }
 
+        [Authorize(Roles ="Admin")]
         [HttpPatch("{id}/status")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

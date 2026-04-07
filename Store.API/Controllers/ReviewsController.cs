@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Store.API.Extensions;
 using Store.Services.Dtos.ReviewDtos;
 using Store.Services.Services.implementations;
 using Store.Services.Services.interfaces;
 
 namespace Store.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ReviewsController : ControllerBase
@@ -20,13 +23,22 @@ namespace Store.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddReview([FromBody] ReviewCreateDto dto)
         {
+            // to add a review you must be the user that is sent with the dto
+            var currentUserId = User.GetUserId();
+            if (dto.UserId != currentUserId && !User.IsAdmin())
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "You do not have permission to review.");
+            }
             var result = await _reviewService.AddReviewAsync(dto);
             if (!result.IsSuccess)
             {
                 return BadRequest(result.Message);
             }
+            
             return Ok(result.Data);
         }
+
+        [AllowAnonymous] // without logging in you could see the reviews of a certain product
         [HttpGet("product/{productId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

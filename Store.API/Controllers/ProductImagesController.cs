@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Store.Services.Services.interfaces;
 
 namespace Store.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductImagesController : ControllerBase
@@ -15,7 +17,7 @@ namespace Store.API.Controllers
             _imageService = imageService;
             _env = env;
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpPost("{productId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -49,7 +51,7 @@ namespace Store.API.Controllers
 
             return Ok(result.Data);
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{imageId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

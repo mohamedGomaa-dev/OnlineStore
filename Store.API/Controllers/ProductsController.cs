@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Store.DataAccess.Helpers;
 using Store.Services.Dtos.ProductDtos;
@@ -7,6 +8,7 @@ using Store.Services.Services.interfaces;
 
 namespace Store.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -21,6 +23,7 @@ namespace Store.API.Controllers
             _imageService = imageService;
         }
 
+        [AllowAnonymous] // you could navigate through products
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllProducts([FromQuery] ProductQuery query)
@@ -30,6 +33,7 @@ namespace Store.API.Controllers
             return Ok(result);
         }
         
+        [AllowAnonymous]
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -48,6 +52,7 @@ namespace Store.API.Controllers
             return Ok(result.Data);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -62,6 +67,7 @@ namespace Store.API.Controllers
             return CreatedAtAction(nameof(GetProduct),new {id = result.Data?.Id},result.Data);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -76,6 +82,7 @@ namespace Store.API.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -89,7 +96,7 @@ namespace Store.API.Controllers
             }
             return NoContent();
         }
-
+        [AllowAnonymous]
         [HttpGet("{id}/images")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
