@@ -83,7 +83,7 @@ namespace Store.Services.Services.implementations
                 // the dto includes annotation for the quantity of item to have more than 0
                 if (item.Quantity > product.QuantityStock)
                 {
-                    return Utility.Failure<OrderDto>($"stock of product is not enough for the quantity you ordered");
+                    return Utility.Failure<OrderDto>($"stock of product is not enough for the quantity stock you ordered");
                 } else
                 {
                     product.QuantityStock -= item.Quantity;
