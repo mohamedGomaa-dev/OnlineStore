@@ -4,6 +4,7 @@ using Moq;
 using Store.DataAccess.Units.implementations;
 using Store.DataAccess.Units.interfaces;
 using Store.Models.Entities;
+using Store.Models.Enums;
 using Store.Services.Dtos.OrderDtos;
 using Store.Services.Helpers;
 using Store.Services.Services.implementations;
@@ -186,8 +187,42 @@ namespace Store.Tests.Services
             result.IsSuccess.Should().BeTrue();
             result.Message.Should().Contain("found order!");
         }
-       
 
+        [Fact]
+        public async Task GetUserOrdersAsync_UserDoesntExist_ReturnsFailure()
+        {
+            // Arrange
+            int userId = 1;
+            // we mock the exists async function from unit of work
+            _mockUnitOfwork.Setup(u => u.Users.ExistsAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(false);
 
+            // Act
+            var result = await _orderService.GetUserOrdersAsync(1);
+            // Assert
+            result.IsSuccess.Should().Be(false);
+            result.Message.Should().Contain("not found");
+        }
+        [Fact]
+        public async Task GetUserOrdersAsync_UserExists_ReturnsFailure()
+        {
+            // Arrange
+            int userId = 1;
+            List<Order> orders = new List<Order>() {
+                new Order { Id = 1, UserId = userId, TotalAmount = 14 },
+                new Order { Id = 2, UserId = userId, TotalAmount = 14 },
+            };
+            
+            // we mock the exists async function from unit of work
+            _mockUnitOfwork.Setup(u => u.Users.ExistsAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
+            _mockUnitOfwork.Setup(u => u.Orders.GetAllAsync(
+                    It.IsAny<Expression<Func<Order, bool>>>()
+                )).ReturnsAsync(orders);
+            // Act
+            var result = await _orderService.GetUserOrdersAsync(1);
+            // Assert
+            result.IsSuccess.Should().Be(true);
+            result.Message.Should().Contain("success");
+        }
+        
     }
 }
