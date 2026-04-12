@@ -106,7 +106,7 @@ namespace Store.Tests.Services
         }
 
         [Fact]
-        public async Task CreateOrderAsync_WhenQuantityDoesntExceedStock_ShouldReturnFailure()
+        public async Task CreateOrderAsync_WhenQuantityDoesntExceedStock_ShouldReturnSuccess()
         {
             // ARRANGE
             var dto = new OrderCreateDto
@@ -128,6 +128,7 @@ namespace Store.Tests.Services
             // ACT
             var result = await _orderService.CreateOrderAsync(dto);
             // ASSERT
+            fakeProduct.QuantityStock.Should().Be(1);
             result.IsSuccess.Should().BeTrue();
             _mockUnitOfwork.Verify(u => u.CommitChanges(), Times.Once);
             // should contian stock to assert that the product doesn't have enough stock
@@ -203,7 +204,7 @@ namespace Store.Tests.Services
             result.Message.Should().Contain("not found");
         }
         [Fact]
-        public async Task GetUserOrdersAsync_UserExists_ReturnsFailure()
+        public async Task GetUserOrdersAsync_UserExists_ReturnsSuccess()
         {
             // Arrange
             int userId = 1;
@@ -215,7 +216,7 @@ namespace Store.Tests.Services
             // we mock the exists async function from unit of work
             _mockUnitOfwork.Setup(u => u.Users.ExistsAsync(It.IsAny<Expression<Func<User, bool>>>())).ReturnsAsync(true);
             _mockUnitOfwork.Setup(u => u.Orders.GetAllAsync(
-                    It.IsAny<Expression<Func<Order, bool>>>()
+                    It.IsAny<Expression<Func<Order, bool>>>(), "OrderItems.Product", "User"
                 )).ReturnsAsync(orders);
             // Act
             var result = await _orderService.GetUserOrdersAsync(1);
@@ -223,6 +224,44 @@ namespace Store.Tests.Services
             result.IsSuccess.Should().Be(true);
             result.Message.Should().Contain("success");
         }
-        
+
+        [Fact]
+        public async Task UpdateOrderStatusAsync_OrderIsNull_ReturnsFailure()
+        {
+            // Arrange
+            int orderId = 3;
+            Order order = null;
+            _mockUnitOfwork.Setup(u => u.Orders.GetAsync(
+             It.IsAny<Expression<Func<Order, bool>>>()
+            )).ReturnsAsync(order);
+
+            // Act
+            var result = await _orderService.UpdateOrderStatusAsync(orderId, OrderStatus.Pending);
+
+            // Assert
+            result.IsSuccess.Should().BeFalse();
+            result.Message.Should().Contain("not found");
+        }
+        [Fact]
+        public async Task UpdateOrderStatusAsync_OrderIsNotNull_ReturnsSuccess()
+        {
+            // Arrange
+            int orderId = 3;
+            Order order = new Order { Id = orderId };
+            _mockUnitOfwork.Setup(u => u.Orders.GetAsync(
+             It.IsAny<Expression<Func<Order, bool>>>()
+            )).ReturnsAsync(order);
+
+            // Act
+            var result = await _orderService.UpdateOrderStatusAsync(orderId, OrderStatus.Processing);
+
+            // Assert
+            _mockUnitOfwork.Verify(u => u.CommitChanges(), Times.Once);
+            result.IsSuccess.Should().BeTrue();
+            result.Message.Should().Contain("updated successfully");
+        }
+
+       
+
     }
 }
