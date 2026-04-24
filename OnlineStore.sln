@@ -11,7 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.DataAccess", "Store.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Services", "Store.Services\Store.Services.csproj", "{0762517A-A5BD-4ACE-A8D1-2CE721079455}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Tests", "Store.Tests\Store.Tests.csproj", "{640429DA-7BC7-4319-883C-4D5E28CCD52F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.Services.Tests", "Store.Tests\Store.Services.Tests.csproj", "{640429DA-7BC7-4319-883C-4D5E28CCD52F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Store.API.Tests", "Store.API.Tests\Store.API.Tests.csproj", "{FC064ADA-ED06-4FF9-B69F-E7EFD84F5EFC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{640429DA-7BC7-4319-883C-4D5E28CCD52F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{640429DA-7BC7-4319-883C-4D5E28CCD52F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{640429DA-7BC7-4319-883C-4D5E28CCD52F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC064ADA-ED06-4FF9-B69F-E7EFD84F5EFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC064ADA-ED06-4FF9-B69F-E7EFD84F5EFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC064ADA-ED06-4FF9-B69F-E7EFD84F5EFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC064ADA-ED06-4FF9-B69F-E7EFD84F5EFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

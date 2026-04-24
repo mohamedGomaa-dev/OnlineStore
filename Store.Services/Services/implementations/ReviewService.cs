@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Store.DataAccess.Helpers;
 using Store.DataAccess.Units.interfaces;
 using Store.Models.Entities;
 using Store.Services.Dtos.ReviewDtos;
@@ -70,6 +71,13 @@ namespace Store.Services.Services.implementations
             var reviews = await _unitOfWork.Reviews.GetAllAsync(r => r.ProductId == productId);
 
             return Utility.Success<IEnumerable<ReviewDto>>("Success", _mapper.Map<IEnumerable<ReviewDto>>(reviews));
+        }
+
+        public async Task<PagedResult<IEnumerable<ReviewDto>>> GetProductReviewsAsync(ReviewQuery query)
+        {
+            var result = await _unitOfWork.Reviews.GetReviewsAsync(query);
+            var reviews = _mapper.Map<IEnumerable<ReviewDto>>(result.Items);
+            return Utility.SuccessPaged(reviews, result.TotalCount, query.PageNumber, query.PageSize);
         }
     }
 }

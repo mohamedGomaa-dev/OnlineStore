@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Store.API.Extensions;
+using Store.DataAccess.Helpers;
 using Store.Services.Dtos.ReviewDtos;
 using Store.Services.Services.implementations;
 using Store.Services.Services.interfaces;
@@ -45,6 +46,20 @@ namespace Store.API.Controllers
         public async Task<IActionResult> GetProductReviews([FromRoute] int productId)
         {
             var result = await _reviewService.GetProductReviewsAsync(productId);
+            if (!result.IsSuccess)
+            {
+                return NotFound(result.Message);
+            }
+            return Ok(result.Data);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("product/reviews")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetProductReviews([FromQuery] ReviewQuery query)
+        {
+            var result = await _reviewService.GetProductReviewsAsync(query);
             if (!result.IsSuccess)
             {
                 return NotFound(result.Message);

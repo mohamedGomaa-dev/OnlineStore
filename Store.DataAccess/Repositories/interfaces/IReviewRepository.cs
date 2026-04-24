@@ -1,4 +1,5 @@
-﻿using Store.Models.Entities;
+﻿using Store.DataAccess.Helpers;
+using Store.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,6 @@ namespace Store.DataAccess.Repositories.interfaces
 {
     public interface IReviewRepository : IGenericRepository<Review>
     {
+        Task<(IEnumerable<Review> Items, int TotalCount)> GetReviewsAsync(ReviewQuery query);
     }
 }

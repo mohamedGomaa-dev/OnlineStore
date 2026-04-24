@@ -1,4 +1,5 @@
-﻿using Store.Services.Dtos.ReviewDtos;
+﻿using Store.DataAccess.Helpers;
+using Store.Services.Dtos.ReviewDtos;
 using Store.Services.Helpers;
 using System;
 using System.Collections.Generic;
@@ -12,5 +13,6 @@ namespace Store.Services.Services.interfaces
     {
         Task<Result<ReviewDto>> AddReviewAsync(ReviewCreateDto dto);
         Task<Result<IEnumerable<ReviewDto>>> GetProductReviewsAsync(int productId);
+        Task<PagedResult<IEnumerable<ReviewDto>>> GetProductReviewsAsync(ReviewQuery query);
     }
 }
