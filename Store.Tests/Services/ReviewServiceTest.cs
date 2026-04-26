@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentAssertions;
 using Moq;
+using Store.DataAccess.Helpers;
 using Store.DataAccess.Units.implementations;
 using Store.DataAccess.Units.interfaces;
 using Store.Models.Entities;
@@ -153,6 +154,45 @@ namespace Store.Services.Tests.Services
             // Verify that the review was actually added to the repository
             _unitOfWorkMock.Verify(u => u.Reviews.AddAsync(It.IsAny<Review>()), Times.Once);
             _unitOfWorkMock.Verify(u => u.CommitChanges(), Times.Once);
+
+        }
+
+        [Fact]
+        public async Task GetProductReviewsAsync_WhenProductDoesntExist_ReturnsFaliure()
+        {
+            // Arrange 
+            int productId = 1;
+
+            _unitOfWorkMock.Setup(u => u.Products.ExistsAsync(It.IsAny<Expression<Func<Product, bool>>>())).ReturnsAsync(false);
+            // Act
+
+            var result = await _reviewService.GetProductReviewsAsync(productId);
+
+            // Assert
+            result.IsSuccess.Should().BeFalse();
+            result.Message.Should().Contain($"product with id: {productId} not found");
+        }
+
+        [Fact]
+        public async Task GetProductReviewsAsync_WhenProductExists_ReturnsSuccess()
+        {
+            // Arrange 
+            int productId = 1;
+            var reviewDtos = new List<ReviewDto>();
+            var reviews = new List<Review>();
+            _unitOfWorkMock.Setup(u => u.Products.ExistsAsync(It.IsAny<Expression<Func<Product, bool>>>())).ReturnsAsync(true);
+            _unitOfWorkMock.Setup(u => u.Reviews.GetAllAsync(It.IsAny<Expression<Func<Review, bool>>>())).ReturnsAsync(reviews);
+            
+
+            var result = await _reviewService.GetProductReviewsAsync(productId);
+
+            // Assert
+            result.IsSuccess.Should().BeTrue();
+            result.Message.Should().Contain("Success");
+        }
+
+        [Fact] async Task GetProductReviewsAsync_WhenWeUseReviewQuery_ReturnsSuccess()
+        {
 
         }
         
