@@ -12,6 +12,8 @@ using System.Text;
 using Store.API.Helpers;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.ResponseCompression;
+using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -177,6 +179,28 @@ builder.Services.AddCors(options =>
     });
 });
 
+// add response compression
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+    options.MimeTypes = new[]
+    {
+        "application/json",
+        "text/plain",
+        "text/html",
+        "application/xml"
+    };
+});
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest;
+});
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest;
+});
 var app = builder.Build();
 
 app.UseExceptionHandler();
@@ -188,6 +212,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseResponseCompression();
 app.UseCors("StoreApiCorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
