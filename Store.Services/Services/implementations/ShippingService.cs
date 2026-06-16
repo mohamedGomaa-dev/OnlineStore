@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Store.DataAccess.Repositories.interfaces;
 using Store.DataAccess.Units.interfaces;
 using Store.Models.Entities;
@@ -18,10 +19,12 @@ namespace Store.Services.Services.implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public ShippingService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly ILogger<ShippingService> _logger;
+        public ShippingService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<ShippingService> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _logger = logger;
         }
         public async Task<Result<ShippingDto>> CreateShippingAsync(ShippingCreateDto dto)
         {
@@ -36,24 +39,30 @@ namespace Store.Services.Services.implementations
             // return success
             if (string.IsNullOrWhiteSpace(dto.TrackingNumber))
             {
+                _logger.LogWarning("Tracking number Is Empty");
                 return Utility.Failure<ShippingDto>("enter a tracking number");
             }
             if (string.IsNullOrWhiteSpace(dto.CarrierName))
             {
+                _logger.LogWarning("Carrier name Is Empty");
+
                 return Utility.Failure<ShippingDto>("enter a carrier name");
             }
             if (dto.EstimatedDeliveryDate <= DateTime.UtcNow)
             {
+                _logger.LogWarning("Estimated delivery date: {DeliveryDate} is not in the future!", dto.EstimatedDeliveryDate);
                 // a quick solution would be to add 10 days to the estimation
                 dto.EstimatedDeliveryDate = dto.EstimatedDeliveryDate.AddDays(10);
                 //return Utility.Failure<ShippingDto>("enter a valid date");
             }
             if (!await _unitOfWork.Orders.ExistsAsync(o => o.Id == dto.OrderId))
             {
+                _logger.LogWarning("Trying to create a shipping for non existent order with id: {ID}", dto.OrderId);
                 return Utility.Failure<ShippingDto>($"order with id: {dto.OrderId} doesn't exist");
             }
             if (await _unitOfWork.Shippings.ExistsAsync(s => s.OrderId == dto.OrderId))
             {
+                _logger.LogWarning("Shipping for order with id: {ID} already exists!", dto.OrderId);
                 return Utility.Failure<ShippingDto>($"order with id: {dto.OrderId} already has a shipping");
             }
 
@@ -61,6 +70,7 @@ namespace Store.Services.Services.implementations
             shipping.ShippingStatus = ShippingStatus.Processing;
             await _unitOfWork.Shippings.AddAsync(shipping);
             await _unitOfWork.CommitChanges();
+            _logger.LogInformation("Created shipping for order with id: {orderID}, and the shipping id is: {shippingId}", dto.OrderId, shipping.Id);
             return Utility.Success<ShippingDto>($"successfully created", _mapper.Map<ShippingDto>(shipping));
         }
 
