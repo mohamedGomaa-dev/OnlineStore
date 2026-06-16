@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Caching.Memory;
 using Store.DataAccess.Helpers;
 using Store.DataAccess.Units.interfaces;
 using Store.Models.Entities;
@@ -17,11 +18,12 @@ namespace Store.Services.Services.implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
-        public ReviewService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly IMemoryCache _cache;
+        public ReviewService(IUnitOfWork unitOfWork, IMapper mapper, IMemoryCache cache)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _cache = cache;
         }
 
         public async Task<Result<ReviewDto>> AddReviewAsync(ReviewCreateDto dto)
@@ -57,6 +59,7 @@ namespace Store.Services.Services.implementations
             review.ReviewDate = DateTime.UtcNow;
             await _unitOfWork.Reviews.AddAsync(review);
             await _unitOfWork.CommitChanges();
+            _cache.Remove("reviews");
             return Utility.Success<ReviewDto>("successfully added review", _mapper.Map<ReviewDto>(review));
 
         }

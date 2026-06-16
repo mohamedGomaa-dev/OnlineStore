@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Store.DataAccess.Units.interfaces;
 using Store.Models.Entities;
 using Store.Models.Enums;
@@ -17,11 +18,13 @@ namespace Store.Services.Services.implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ILogger<OrderService> _logger;
 
-        public OrderService(IUnitOfWork unitOfWork, IMapper mapper)
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<OrderService> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<Result<OrderDto>> CreateOrderAsync(OrderCreateDto dto)
@@ -42,6 +45,7 @@ namespace Store.Services.Services.implementations
              */
             if (dto.Items is null)
             {
+                _logger.LogDebug("Null Items: {Items} are empty", nameof(dto.Items));
                 return Utility.Failure<OrderDto>("items are empty");
             }
             if (dto.Items.Count <= 0)
@@ -103,6 +107,7 @@ namespace Store.Services.Services.implementations
             await _unitOfWork.Orders.AddAsync(order);
 
             await _unitOfWork.CommitChanges();
+            _logger.LogInformation("Order Created: order created with id: {OrderId}", order.Id);
 
             return Utility.Success<OrderDto>("order created successfully", _mapper.Map<OrderDto>(order));
         }

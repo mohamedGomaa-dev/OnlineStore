@@ -10,12 +10,17 @@ using Store.Services.Services.implementations;
 using Store.Services.Services.interfaces;
 using System.Text;
 using Store.API.Helpers;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 100;
+});
 // add connection string
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -34,7 +39,59 @@ builder.Services.AddProblemDetails(options =>
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 // add unit of work
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+// add rate limiter
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("DefaultPolicy", limiterOptions =>
+    {
+        limiterOptions.Window = TimeSpan.FromMinutes(1);
+        limiterOptions.PermitLimit = 100;
+        limiterOptions.QueueLimit = 10;
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+    options.AddSlidingWindowLimiter("SlidingWindow", limiterOptions =>
+    {
+        limiterOptions.Window = TimeSpan.FromMinutes(1);
+        limiterOptions.PermitLimit = 100;
+        limiterOptions.QueueLimit = 10;
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        limiterOptions.SegmentsPerWindow = 6;
+        limiterOptions.AutoReplenishment = true;
+    });
+    options.AddConcurrencyLimiter("Concurrency", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = 50;
+        limiterOptions.QueueLimit = 100;
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
 
+    options.AddPolicy("ApiUserPolicy", httpContext =>
+    {
+        return RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.User.Identity?.Name ?? "anonymous",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                Window = TimeSpan.FromMinutes(1),
+                PermitLimit = 1000,
+                AutoReplenishment = true
+            }
+            );
+    });
+
+    options.AddPolicy("IpPolicy", httpContext =>
+    {
+        return RateLimitPartition.GetSlidingWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new SlidingWindowRateLimiterOptions
+            {
+                Window = TimeSpan.FromMinutes(1),
+                PermitLimit = 1000,
+                AutoReplenishment = true,
+                SegmentsPerWindow = 6
+            }
+            );
+    });
+});
 // add services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -134,7 +191,7 @@ app.UseHttpsRedirection();
 app.UseCors("StoreApiCorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseRateLimiter();
 app.MapControllers();
 
 app.Run();

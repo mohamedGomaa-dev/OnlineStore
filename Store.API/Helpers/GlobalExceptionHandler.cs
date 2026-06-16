@@ -6,9 +6,9 @@ namespace Store.API.Helpers
 {
     public class GlobalExceptionHandler : IExceptionHandler
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<GlobalExceptionHandler> _logger;
         private readonly IProblemDetailsService _problemDetailsService;
-        public GlobalExceptionHandler(ILogger logger, IProblemDetailsService problemDetails)
+        public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger, IProblemDetailsService problemDetails)
         {
             _logger = logger;
             _problemDetailsService = problemDetails;

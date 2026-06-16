@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Store.API.Extensions;
 using Store.DataAccess.Helpers;
 using Store.Services.Dtos.UserDtos;
@@ -21,6 +22,7 @@ namespace Store.API.Controllers
 
         [Authorize(Roles ="Admin")]
         [HttpGet]
+        [EnableRateLimiting(policyName: "SlidingWindow")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllUsers([FromQuery] UserQuery query)
         {
@@ -95,6 +97,7 @@ namespace Store.API.Controllers
         }
 
         [Authorize(Roles = "Admin")]
+        [EnableRateLimiting(policyName: "ApiUserPolicy")]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
