@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Store.DataAccess.Helpers;
 using Store.Services.Dtos.ProductDtos;
 using Store.Services.Services.implementations;
@@ -16,16 +17,18 @@ namespace Store.API.Controllers
 
         private readonly IProductService _productService;
         private readonly IProductImageService _imageService;
-
-        public ProductsController(IProductService productService, IProductImageService imageService)
+        private readonly IOutputCacheStore _cache;
+        public ProductsController(IProductService productService, IProductImageService imageService, IOutputCacheStore cache)
         {
             _productService = productService;
             _imageService = imageService;
+            _cache = cache;
         }
 
         [AllowAnonymous] // you could navigate through products
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [OutputCache(PolicyName = "DefaultCachePolicy")]
         public async Task<IActionResult> GetAllProducts([FromQuery] ProductQuery query)
         {
             var result = await _productService.GetAllProductsAsync(query);
@@ -38,6 +41,7 @@ namespace Store.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [OutputCache(PolicyName = "SingleProduct")]
         public async Task<IActionResult> GetProduct([FromRoute] int id)
         {
             var result = await _productService.GetProductByIdAsync(id);
@@ -63,7 +67,7 @@ namespace Store.API.Controllers
             {
                 return BadRequest(result.Message);
             }
-
+            await _cache.EvictByTagAsync("products", default);
             return CreatedAtAction(nameof(GetProduct),new {id = result.Data?.Id},result.Data);
         }
 
@@ -79,6 +83,8 @@ namespace Store.API.Controllers
             {
                 return NotFound(result.Message);
             }
+            await _cache.EvictByTagAsync("products", default);
+
             return NoContent();
         }
 
@@ -94,6 +100,8 @@ namespace Store.API.Controllers
             {
                 return NotFound(result.Message);
             }
+            await _cache.EvictByTagAsync("products", default);
+
             return NoContent();
         }
         [AllowAnonymous]

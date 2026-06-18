@@ -17,6 +17,20 @@ using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// add output cache
+builder.Services.AddOutputCache(options =>
+{
+    options.AddPolicy("DefaultCachePolicy", cacheOptions =>
+    {
+        cacheOptions.Expire(TimeSpan.FromMinutes(10));
+        cacheOptions.Tag(["products"]);
+    });
+    options.AddPolicy("SingleProduct", cacheOptions =>
+    {
+        cacheOptions.Expire(TimeSpan.FromMinutes(10)).SetVaryByRouteValue(["id"]);
+        cacheOptions.Tag(["products"]);
+    });
+});
 // Add services to the container.
 
 builder.Services.AddMemoryCache(options =>
@@ -212,6 +226,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseOutputCache();
 app.UseResponseCompression();
 app.UseCors("StoreApiCorsPolicy");
 app.UseAuthentication();
